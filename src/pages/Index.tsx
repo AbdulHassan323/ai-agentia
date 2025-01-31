@@ -7,14 +7,14 @@ const Index = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen bg-cyber-black text-cyber-white p-4 md:p-8">
+    <div className="min-h-screen bg-cyber-black text-cyber-white">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8 }}
         className="max-w-7xl mx-auto space-y-8"
       >
-        <header className="text-center mb-12">
+        <header className="text-center mb-12 pt-20">
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -43,17 +43,20 @@ const Index = () => {
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.8 }}
+            className="flex justify-center"
           >
             <Button
               onClick={() => navigate('/marketplace')}
-              className="bg-gradient-to-r from-cyber-purple to-cyber-cyan hover:opacity-90 text-white px-8 py-6 text-lg rounded-full transition-all duration-300 hover:scale-105 animate-glow shadow-lg"
+              className="bg-gradient-to-r from-cyber-purple to-cyber-cyan hover:opacity-90 text-white px-8 py-6 text-lg rounded-full transition-all duration-300 hover:scale-105 animate-glow shadow-lg neo-brutalism"
             >
               Explore AI Marketplace
             </Button>
           </motion.div>
         </header>
 
-        <SplineSceneBasic />
+        <div className="relative w-full h-[600px] mt-12">
+          <SplineSceneBasic />
+        </div>
       </motion.div>
     </div>
   );
