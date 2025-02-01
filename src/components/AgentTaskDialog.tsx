@@ -80,32 +80,21 @@ export function AgentTaskDialog({ agent, open, onOpenChange }: AgentTaskDialogPr
   const { toast } = useToast();
   const form = useForm<TaskFormData>();
   const [isProcessing, setIsProcessing] = useState(false);
-  const [llmEngine, setLlmEngine] = useState<string>("openai");
 
   const agentFields = getAgentSpecificFields(agent.name);
 
   const onSubmit = async (data: TaskFormData) => {
     setIsProcessing(true);
     try {
-      const response = await fetch(
-        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/process-agent-task`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
-          },
-          body: JSON.stringify({
-            agent,
-            ...data,
-          }),
-        }
-      );
+      const { data: result, error } = await supabase.functions.invoke('process-agent-task', {
+        body: {
+          agent,
+          ...data,
+        },
+      });
 
-      const result = await response.json();
-
-      if (!result.success) {
-        throw new Error(result.error || "Failed to process task");
+      if (error) {
+        throw new Error(error.message || "Failed to process task");
       }
 
       toast({
@@ -113,7 +102,6 @@ export function AgentTaskDialog({ agent, open, onOpenChange }: AgentTaskDialogPr
         description: "Your task has been processed successfully. Check the results below.",
       });
 
-      // Here you could store the result in state or handle it as needed
       console.log("Task result:", result);
 
     } catch (error) {
