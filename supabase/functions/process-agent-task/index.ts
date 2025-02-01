@@ -26,12 +26,15 @@ serve(async (req) => {
 
     console.log('Processing task with prompts:', { systemPrompt, userPrompt });
 
+    // Ensure headers are properly constructed as strings
+    const openAIHeaders = {
+      'Authorization': `Bearer ${Deno.env.get('OPENAI_API_KEY')}`,
+      'Content-Type': 'application/json',
+    };
+
     const openAIResponse = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${Deno.env.get('OPENAI_API_KEY')}`,
-        'Content-Type': 'application/json',
-      },
+      headers: openAIHeaders,
       body: JSON.stringify({
         model: 'gpt-4o',
         messages: [
@@ -52,6 +55,12 @@ serve(async (req) => {
     
     const result = data.choices[0].message.content;
 
+    // Ensure response headers are properly constructed
+    const responseHeaders = {
+      ...corsHeaders,
+      'Content-Type': 'application/json',
+    };
+
     return new Response(
       JSON.stringify({ 
         success: true, 
@@ -63,10 +72,7 @@ serve(async (req) => {
         }
       }),
       { 
-        headers: { 
-          ...corsHeaders, 
-          'Content-Type': 'application/json' 
-        } 
+        headers: responseHeaders
       }
     );
   } catch (error) {
@@ -78,10 +84,10 @@ serve(async (req) => {
       }),
       { 
         status: 500,
-        headers: { 
-          ...corsHeaders, 
-          'Content-Type': 'application/json' 
-        } 
+        headers: {
+          ...corsHeaders,
+          'Content-Type': 'application/json'
+        }
       }
     );
   }
