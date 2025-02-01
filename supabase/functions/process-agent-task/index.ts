@@ -7,6 +7,7 @@ const corsHeaders = {
 };
 
 serve(async (req) => {
+  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
@@ -15,19 +16,17 @@ serve(async (req) => {
     const { agent, objective, context, ...additionalFields } = await req.json();
     
     // Construct the prompt based on the agent type and task details
-    let systemPrompt = `You are ${agent.name}, an AI assistant specialized in ${agent.description}. `;
-    let userPrompt = `Task Objective: ${objective}\nContext: ${context}\n`;
-    
-    // Add any additional fields to the prompt
-    Object.entries(additionalFields).forEach(([key, value]) => {
-      if (value) {
-        userPrompt += `\n${key}: ${value}`;
-      }
-    });
+    const systemPrompt = `You are ${agent.name}, an AI assistant specialized in ${agent.description}.`;
+    const userPrompt = `Task Objective: ${objective}\nContext: ${context}\n${
+      Object.entries(additionalFields)
+        .filter(([_, value]) => value)
+        .map(([key, value]) => `${key}: ${value}`)
+        .join('\n')
+    }`;
 
-    console.log('Sending request to OpenAI with prompts:', { systemPrompt, userPrompt });
+    console.log('Processing task with prompts:', { systemPrompt, userPrompt });
 
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+    const openAIResponse = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${Deno.env.get('OPENAI_API_KEY')}`,
@@ -42,13 +41,13 @@ serve(async (req) => {
       }),
     });
 
-    if (!response.ok) {
-      const error = await response.json();
+    if (!openAIResponse.ok) {
+      const error = await openAIResponse.json();
       console.error('OpenAI API error:', error);
       throw new Error(error.error?.message || 'Failed to process task');
     }
 
-    const data = await response.json();
+    const data = await openAIResponse.json();
     console.log('Received response from OpenAI:', data);
     
     const result = data.choices[0].message.content;
@@ -63,8 +62,11 @@ serve(async (req) => {
           timestamp: new Date().toISOString()
         }
       }),
-      {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      { 
+        headers: { 
+          ...corsHeaders, 
+          'Content-Type': 'application/json' 
+        } 
       }
     );
   } catch (error) {
@@ -74,9 +76,12 @@ serve(async (req) => {
         success: false, 
         error: error.message 
       }),
-      {
+      { 
         status: 500,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        headers: { 
+          ...corsHeaders, 
+          'Content-Type': 'application/json' 
+        } 
       }
     );
   }
