@@ -1,14 +1,15 @@
 import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Form, FormField, FormItem, FormLabel, FormControl, FormDescription, FormMessage } from "@/components/ui/form";
+import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useForm } from "react-hook-form";
-import { useToast } from "@/components/ui/use-toast";
-import { HelpCircle } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import { HelpCircle, Loader2 } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { supabase } from "@/integrations/supabase/client";
 
 interface AgentTaskDialogProps {
   agent: {
@@ -78,24 +79,55 @@ const getAgentSpecificFields = (agentName: string) => {
 export function AgentTaskDialog({ agent, open, onOpenChange }: AgentTaskDialogProps) {
   const { toast } = useToast();
   const form = useForm<TaskFormData>();
+  const [isProcessing, setIsProcessing] = useState(false);
   const [llmEngine, setLlmEngine] = useState<string>("openai");
 
   const agentFields = getAgentSpecificFields(agent.name);
 
   const onSubmit = async (data: TaskFormData) => {
-    console.log("Task data to be sent to LLM:", {
-      agent: agent.name,
-      llmEngine,
-      ...data,
-    });
+    setIsProcessing(true);
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/process-agent-task`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+          },
+          body: JSON.stringify({
+            agent,
+            ...data,
+          }),
+        }
+      );
 
-    toast({
-      title: "Task Submitted",
-      description: `Your task has been queued for processing with ${llmEngine.toUpperCase()}. We'll notify you once it's complete.`,
-    });
+      const result = await response.json();
 
-    onOpenChange(false);
-    form.reset();
+      if (!result.success) {
+        throw new Error(result.error || "Failed to process task");
+      }
+
+      toast({
+        title: "Task Completed",
+        description: "Your task has been processed successfully. Check the results below.",
+      });
+
+      // Here you could store the result in state or handle it as needed
+      console.log("Task result:", result);
+
+    } catch (error) {
+      console.error("Error processing task:", error);
+      toast({
+        title: "Error",
+        description: "Failed to process task. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsProcessing(false);
+      onOpenChange(false);
+      form.reset();
+    }
   };
 
   return (
@@ -201,32 +233,20 @@ export function AgentTaskDialog({ agent, open, onOpenChange }: AgentTaskDialogPr
               )}
             />
 
-            <div className="space-y-4">
-              <FormItem>
-                <FormLabel className="text-cyber-white">LLM Engine (Coming Soon)</FormLabel>
-                <Select
-                  disabled
-                  value={llmEngine}
-                  onValueChange={setLlmEngine}
-                >
-                  <SelectTrigger className="bg-cyber-black/50 border-cyber-purple/30 text-cyber-white/50">
-                    <SelectValue placeholder="Select LLM Engine" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="openai">OpenAI</SelectItem>
-                    <SelectItem value="gemini">Gemini</SelectItem>
-                    <SelectItem value="claude">Claude</SelectItem>
-                  </SelectContent>
-                </Select>
-              </FormItem>
-            </div>
-
             <DialogFooter>
               <Button
                 type="submit"
+                disabled={isProcessing}
                 className="bg-gradient-to-r from-cyber-purple to-cyber-cyan hover:opacity-90 text-white"
               >
-                Submit Task
+                {isProcessing ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Processing...
+                  </>
+                ) : (
+                  "Submit Task"
+                )}
               </Button>
             </DialogFooter>
           </form>
