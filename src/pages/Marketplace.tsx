@@ -3,6 +3,8 @@ import { Search, Edit, Brain, Play, BarChart, MessageSquare, Code, Lightbulb } f
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useToast } from "@/components/ui/use-toast";
+import { useState } from "react";
+import { AgentTaskDialog } from "@/components/AgentTaskDialog";
 
 const agents = [
   {
@@ -49,12 +51,12 @@ const agents = [
 
 const Marketplace = () => {
   const { toast } = useToast();
+  const [selectedAgent, setSelectedAgent] = useState<(typeof agents)[0] | null>(null);
+  const [dialogOpen, setDialogOpen] = useState(false);
 
-  const handleHire = (agentName: string) => {
-    toast({
-      title: "Agent Hired!",
-      description: `${agentName} is now ready to assist you.`,
-    });
+  const handleHire = (agent: typeof agents[0]) => {
+    setSelectedAgent(agent);
+    setDialogOpen(true);
   };
 
   return (
@@ -89,7 +91,7 @@ const Marketplace = () => {
                   <h3 className="text-xl font-semibold text-cyber-white">{agent.name}</h3>
                   <p className="text-sm text-cyber-white/60">{agent.description}</p>
                   <Button
-                    onClick={() => handleHire(agent.name)}
+                    onClick={() => handleHire(agent)}
                     className="w-full bg-gradient-to-r from-cyber-purple to-cyber-cyan hover:opacity-90 text-white rounded-full transition-all duration-300 hover:scale-105 group-hover:shadow-lg group-hover:shadow-cyber-purple/20"
                   >
                     Hire
@@ -100,6 +102,14 @@ const Marketplace = () => {
           ))}
         </motion.div>
       </div>
+
+      {selectedAgent && (
+        <AgentTaskDialog
+          agent={selectedAgent}
+          open={dialogOpen}
+          onOpenChange={setDialogOpen}
+        />
+      )}
     </div>
   );
 };
