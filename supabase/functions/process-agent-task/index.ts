@@ -25,6 +25,8 @@ serve(async (req) => {
       }
     });
 
+    console.log('Sending request to OpenAI with prompts:', { systemPrompt, userPrompt });
+
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -32,7 +34,7 @@ serve(async (req) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-4o-mini',
+        model: 'gpt-4',
         messages: [
           { role: 'system', content: systemPrompt },
           { role: 'user', content: userPrompt }
@@ -40,12 +42,15 @@ serve(async (req) => {
       }),
     });
 
-    const data = await response.json();
-    
     if (!response.ok) {
-      throw new Error(data.error?.message || 'Failed to process task');
+      const error = await response.json();
+      console.error('OpenAI API error:', error);
+      throw new Error(error.error?.message || 'Failed to process task');
     }
 
+    const data = await response.json();
+    console.log('Received response from OpenAI:', data);
+    
     const result = data.choices[0].message.content;
 
     return new Response(
