@@ -16,7 +16,7 @@ serve(async (req) => {
     const { agent, objective, context, ...additionalFields } = await req.json();
     
     // Construct the prompt based on the agent type and task details
-    const systemPrompt = `You are ${agent.name}, an AI assistant specialized in ${agent.description}.`;
+    const systemPrompt = `You are ${agent.name}, an AI assistant specialized in ${agent.description}. Always format your responses in clear, well-structured Markdown.`;
     const userPrompt = `Task Objective: ${objective}\nContext: ${context}\n${
       Object.entries(additionalFields)
         .filter(([_, value]) => value)
@@ -36,7 +36,7 @@ serve(async (req) => {
       method: 'POST',
       headers: openAIHeaders,
       body: JSON.stringify({
-        model: 'gpt-4o',
+        model: 'gpt-4o-mini',
         messages: [
           { role: 'system', content: systemPrompt },
           { role: 'user', content: userPrompt }
@@ -71,9 +71,7 @@ serve(async (req) => {
           timestamp: new Date().toISOString()
         }
       }),
-      { 
-        headers: responseHeaders
-      }
+      { headers: responseHeaders }
     );
   } catch (error) {
     console.error('Error processing agent task:', error);
