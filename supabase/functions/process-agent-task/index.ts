@@ -15,32 +15,36 @@ serve(async (req) => {
   try {
     const { agent, objective, context, ...additionalFields } = await req.json();
     
-    // Construct the prompt based on the agent type and task details
-    const systemPrompt = `You are ${agent.name}, an AI assistant specialized in ${agent.description}. Always format your responses in clear, well-structured Markdown.`;
-    const userPrompt = `Task Objective: ${objective}\nContext: ${context}\n${
-      Object.entries(additionalFields)
-        .filter(([_, value]) => value)
-        .map(([key, value]) => `${key}: ${value}`)
-        .join('\n')
-    }`;
+    // Log incoming request data for debugging
+    console.log('Processing task for agent:', agent.name);
+    console.log('Objective:', objective);
 
-    console.log('Processing task with prompts:', { systemPrompt, userPrompt });
+    // Construct the prompt
+    const systemPrompt = `You are ${agent.name}, an AI assistant specialized in ${agent.description}. Format your response in clear, well-structured Markdown.`;
+    const userPrompt = `
+Task Objective: ${objective}
+Context: ${context}
+${Object.entries(additionalFields)
+  .filter(([_, value]) => value)
+  .map(([key, value]) => `${key}: ${value}`)
+  .join('\n')}
+    `;
 
-    // Create headers object for OpenAI API request
-    const openAIHeaders = new Headers({
-      'Authorization': `Bearer ${Deno.env.get('OPENAI_API_KEY')}`,
-      'Content-Type': 'application/json',
-    });
+    console.log('Sending request to OpenAI with prompt:', { systemPrompt, userPrompt });
 
     const openAIResponse = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
-      headers: openAIHeaders,
+      headers: {
+        'Authorization': `Bearer ${Deno.env.get('OPENAI_API_KEY')}`,
+        'Content-Type': 'application/json',
+      },
       body: JSON.stringify({
         model: 'gpt-4o-mini',
         messages: [
           { role: 'system', content: systemPrompt },
           { role: 'user', content: userPrompt }
         ],
+        temperature: 0.7,
       }),
     });
 
@@ -51,15 +55,9 @@ serve(async (req) => {
     }
 
     const data = await openAIResponse.json();
-    console.log('Received response from OpenAI:', data);
+    console.log('Received response from OpenAI');
     
     const result = data.choices[0].message.content;
-
-    // Create response headers
-    const responseHeaders = new Headers({
-      ...corsHeaders,
-      'Content-Type': 'application/json',
-    });
 
     return new Response(
       JSON.stringify({ 
@@ -71,17 +69,17 @@ serve(async (req) => {
           timestamp: new Date().toISOString()
         }
       }),
-      { headers: responseHeaders }
+      { 
+        headers: { 
+          ...corsHeaders,
+          'Content-Type': 'application/json'
+        }
+      }
     );
+
   } catch (error) {
     console.error('Error processing agent task:', error);
     
-    // Create error response headers
-    const errorHeaders = new Headers({
-      ...corsHeaders,
-      'Content-Type': 'application/json',
-    });
-
     return new Response(
       JSON.stringify({ 
         success: false, 
@@ -89,7 +87,10 @@ serve(async (req) => {
       }),
       { 
         status: 500,
-        headers: errorHeaders
+        headers: { 
+          ...corsHeaders,
+          'Content-Type': 'application/json'
+        }
       }
     );
   }
