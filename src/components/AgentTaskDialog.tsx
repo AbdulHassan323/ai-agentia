@@ -10,6 +10,7 @@ import { useToast } from "@/hooks/use-toast";
 import { HelpCircle, Loader2 } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { supabase } from "@/integrations/supabase/client";
+import ReactMarkdown from 'react-markdown';
 
 interface AgentTaskDialogProps {
   agent: {
@@ -80,6 +81,7 @@ export function AgentTaskDialog({ agent, open, onOpenChange }: AgentTaskDialogPr
   const { toast } = useToast();
   const form = useForm<TaskFormData>();
   const [isProcessing, setIsProcessing] = useState(false);
+  const [response, setResponse] = useState<string | null>(null);
 
   const agentFields = getAgentSpecificFields(agent.name);
 
@@ -97,6 +99,8 @@ export function AgentTaskDialog({ agent, open, onOpenChange }: AgentTaskDialogPr
         throw new Error(error.message || "Failed to process task");
       }
 
+      setResponse(result.result);
+      
       toast({
         title: "Task Completed",
         description: "Your task has been processed successfully. Check the results below.",
@@ -113,14 +117,12 @@ export function AgentTaskDialog({ agent, open, onOpenChange }: AgentTaskDialogPr
       });
     } finally {
       setIsProcessing(false);
-      onOpenChange(false);
-      form.reset();
     }
   };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[600px] bg-cyber-black border-cyber-purple/30">
+      <DialogContent className="sm:max-w-[800px] bg-cyber-black border-cyber-purple/30">
         <DialogHeader>
           <DialogTitle className="text-cyber-cyan">{agent.name}</DialogTitle>
           <DialogDescription className="text-cyber-white/70">
@@ -239,6 +241,15 @@ export function AgentTaskDialog({ agent, open, onOpenChange }: AgentTaskDialogPr
             </DialogFooter>
           </form>
         </Form>
+
+        {response && (
+          <div className="mt-6 p-4 bg-cyber-black/40 rounded-lg border border-cyber-purple/30">
+            <h3 className="text-lg font-semibold text-cyber-cyan mb-4">Response:</h3>
+            <div className="prose prose-invert max-w-none">
+              <ReactMarkdown>{response}</ReactMarkdown>
+            </div>
+          </div>
+        )}
       </DialogContent>
     </Dialog>
   );
