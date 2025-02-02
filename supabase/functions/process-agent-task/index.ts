@@ -26,11 +26,11 @@ serve(async (req) => {
 
     console.log('Processing task with prompts:', { systemPrompt, userPrompt });
 
-    // Ensure headers are properly constructed as strings
-    const openAIHeaders = {
+    // Create headers object for OpenAI API request
+    const openAIHeaders = new Headers({
       'Authorization': `Bearer ${Deno.env.get('OPENAI_API_KEY')}`,
       'Content-Type': 'application/json',
-    };
+    });
 
     const openAIResponse = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
@@ -55,11 +55,11 @@ serve(async (req) => {
     
     const result = data.choices[0].message.content;
 
-    // Ensure response headers are properly constructed
-    const responseHeaders = {
+    // Create response headers
+    const responseHeaders = new Headers({
       ...corsHeaders,
       'Content-Type': 'application/json',
-    };
+    });
 
     return new Response(
       JSON.stringify({ 
@@ -75,6 +75,13 @@ serve(async (req) => {
     );
   } catch (error) {
     console.error('Error processing agent task:', error);
+    
+    // Create error response headers
+    const errorHeaders = new Headers({
+      ...corsHeaders,
+      'Content-Type': 'application/json',
+    });
+
     return new Response(
       JSON.stringify({ 
         success: false, 
@@ -82,10 +89,7 @@ serve(async (req) => {
       }),
       { 
         status: 500,
-        headers: {
-          ...corsHeaders,
-          'Content-Type': 'application/json'
-        }
+        headers: errorHeaders
       }
     );
   }
