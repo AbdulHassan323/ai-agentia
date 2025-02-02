@@ -90,7 +90,7 @@ export function AgentTaskDialog({ agent, open, onOpenChange }: AgentTaskDialogPr
     try {
       const { data: result, error } = await supabase.functions.invoke('process-agent-task', {
         body: {
-          agent,
+          agent: agent.name,
           ...data,
         },
       });
@@ -99,14 +99,18 @@ export function AgentTaskDialog({ agent, open, onOpenChange }: AgentTaskDialogPr
         throw new Error(error.message || "Failed to process task");
       }
 
-      setResponse(result.result);
-      
-      toast({
-        title: "Task Completed",
-        description: "Your task has been processed successfully. Check the results below.",
-      });
-
       console.log("Task result:", result);
+      
+      // Update to handle the response structure correctly
+      if (result && result.result) {
+        setResponse(result.result);
+        toast({
+          title: "Task Completed",
+          description: "Your task has been processed successfully. Check the results below.",
+        });
+      } else {
+        throw new Error("Invalid response format from the server");
+      }
 
     } catch (error) {
       console.error("Error processing task:", error);
@@ -122,7 +126,7 @@ export function AgentTaskDialog({ agent, open, onOpenChange }: AgentTaskDialogPr
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[800px] bg-cyber-black border-cyber-purple/30">
+      <DialogContent className="sm:max-w-[800px] bg-cyber-black border-cyber-purple/30 max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-cyber-cyan">{agent.name}</DialogTitle>
           <DialogDescription className="text-cyber-white/70">
@@ -245,7 +249,7 @@ export function AgentTaskDialog({ agent, open, onOpenChange }: AgentTaskDialogPr
         {response && (
           <div className="mt-6 p-4 bg-cyber-black/40 rounded-lg border border-cyber-purple/30">
             <h3 className="text-lg font-semibold text-cyber-cyan mb-4">Response:</h3>
-            <div className="prose prose-invert max-w-none">
+            <div className="prose prose-invert max-w-none overflow-y-auto">
               <ReactMarkdown>{response}</ReactMarkdown>
             </div>
           </div>
