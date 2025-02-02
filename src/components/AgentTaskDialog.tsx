@@ -87,7 +87,11 @@ export function AgentTaskDialog({ agent, open, onOpenChange }: AgentTaskDialogPr
 
   const onSubmit = async (data: TaskFormData) => {
     setIsProcessing(true);
+    setResponse(null); // Reset response when submitting new task
+    
     try {
+      console.log("Submitting task with data:", { agent: agent.name, ...data });
+      
       const { data: result, error } = await supabase.functions.invoke('process-agent-task', {
         body: {
           agent: agent.name,
@@ -101,14 +105,14 @@ export function AgentTaskDialog({ agent, open, onOpenChange }: AgentTaskDialogPr
 
       console.log("Task result:", result);
       
-      // Update to handle the response structure correctly
-      if (result && result.result) {
+      if (result?.result) {
         setResponse(result.result);
         toast({
           title: "Task Completed",
           description: "Your task has been processed successfully. Check the results below.",
         });
       } else {
+        console.error("Invalid response format:", result);
         throw new Error("Invalid response format from the server");
       }
 
@@ -116,7 +120,7 @@ export function AgentTaskDialog({ agent, open, onOpenChange }: AgentTaskDialogPr
       console.error("Error processing task:", error);
       toast({
         title: "Error",
-        description: "Failed to process task. Please try again.",
+        description: error.message || "Failed to process task. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -249,7 +253,7 @@ export function AgentTaskDialog({ agent, open, onOpenChange }: AgentTaskDialogPr
         {response && (
           <div className="mt-6 p-4 bg-cyber-black/40 rounded-lg border border-cyber-purple/30">
             <h3 className="text-lg font-semibold text-cyber-cyan mb-4">Response:</h3>
-            <div className="prose prose-invert max-w-none overflow-y-auto">
+            <div className="prose prose-invert max-w-none overflow-y-auto max-h-[400px] text-cyber-white">
               <ReactMarkdown>{response}</ReactMarkdown>
             </div>
           </div>
