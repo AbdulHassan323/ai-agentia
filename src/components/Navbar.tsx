@@ -1,38 +1,62 @@
-import { motion } from "framer-motion";
+import { motion, useScroll, useTransform } from "framer-motion";
 import { Rocket, Brain, Users, DollarSign, MessageSquare, Cpu } from "lucide-react";
 import { Button } from "./ui/button";
 import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
 
 export const Navbar = () => {
   const navigate = useNavigate();
+  const [isVisible, setIsVisible] = useState(true);
+  const [lastScrollY, setLastScrollY] = useState(0);
+
+  const controlNavbar = () => {
+    if (typeof window !== 'undefined') {
+      if (window.scrollY > lastScrollY) {
+        setIsVisible(false); // Hide navbar on scroll down
+      } else {
+        setIsVisible(true); // Show navbar on scroll up
+      }
+      setLastScrollY(window.scrollY);
+    }
+  };
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      window.addEventListener('scroll', controlNavbar);
+      return () => {
+        window.removeEventListener('scroll', controlNavbar);
+      };
+    }
+  }, [lastScrollY]);
 
   const navItems = [
-    { icon: <Rocket className="w-5 h-5" />, label: "Features", href: "#features" },
-    { icon: <Brain className="w-5 h-5" />, label: "Technology", href: "#technology" },
-    { icon: <Users className="w-5 h-5" />, label: "Agents", href: "#agents" },
-    { icon: <DollarSign className="w-5 h-5" />, label: "Pricing", href: "#pricing" },
-    { icon: <MessageSquare className="w-5 h-5" />, label: "Contact", href: "#contact" },
+    { icon: <Rocket className="w-4 h-4" />, label: "Features", href: "#features" },
+    { icon: <Brain className="w-4 h-4" />, label: "Technology", href: "#technology" },
+    { icon: <Users className="w-4 h-4" />, label: "Agents", href: "#agents" },
+    { icon: <DollarSign className="w-4 h-4" />, label: "Pricing", href: "#pricing" },
+    { icon: <MessageSquare className="w-4 h-4" />, label: "Contact", href: "#contact" },
   ];
 
   return (
     <motion.nav
       initial={{ y: -100 }}
-      animate={{ y: 0 }}
+      animate={{ y: isVisible ? 0 : -100 }}
+      transition={{ duration: 0.3 }}
       className="fixed top-0 left-0 right-0 z-50 bg-cyber-black/80 backdrop-blur-lg border-b border-cyber-purple/20"
     >
-      <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
-        <div className="flex items-center gap-2">
+      <div className="max-w-7xl mx-auto px-3 py-2 flex items-center justify-between">
+        <div className="flex items-center gap-1">
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="text-2xl font-bold text-cyber-white flex items-center gap-2"
+            className="text-lg font-bold text-cyber-white flex items-center gap-1"
           >
-            <Cpu className="w-8 h-8 text-cyber-cyan animate-pulse" />
+            <Cpu className="w-5 h-5 text-cyber-cyan animate-pulse" />
             <span className="text-cyber-cyan">Agentia</span>
           </motion.div>
         </div>
 
-        <div className="hidden md:flex items-center gap-6">
+        <div className="hidden md:flex items-center gap-4">
           {navItems.map((item, index) => (
             <motion.a
               key={item.label}
@@ -40,7 +64,7 @@ export const Navbar = () => {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: index * 0.1 }}
-              className="flex items-center gap-2 text-cyber-white/70 hover:text-cyber-cyan transition-colors"
+              className="flex items-center gap-1 text-sm text-cyber-white/70 hover:text-cyber-cyan transition-colors"
             >
               {item.icon}
               <span>{item.label}</span>
@@ -50,7 +74,7 @@ export const Navbar = () => {
 
         <Button
           onClick={() => navigate("/marketplace")}
-          className="bg-cyber-purple hover:bg-cyber-purple/90 text-white px-6 py-2 rounded-full transition-all duration-300 hover:scale-105 animate-glow shadow-lg"
+          className="bg-cyber-purple hover:bg-cyber-purple/90 text-white px-4 py-1 text-sm rounded-full transition-all duration-300 hover:scale-105 animate-glow shadow-lg"
         >
           Launch Console
         </Button>
