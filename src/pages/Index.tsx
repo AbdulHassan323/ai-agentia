@@ -2,6 +2,8 @@ import { SplineSceneBasic } from "@/components/SplineSceneBasic";
 import { Features } from "@/components/Features";
 import { Pricing } from "@/components/Pricing";
 import { Contact } from "@/components/Contact";
+import { AISolutions } from "@/components/AISolutions";
+import { Navbar } from "@/components/Navbar";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -11,11 +13,12 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-cyber-black text-cyber-white">
+      <Navbar />
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8 }}
-        className="max-w-7xl mx-auto"
+        className="max-w-7xl mx-auto pt-20"
       >
         {/* Hero Section */}
         <header className="text-center pt-20 px-4">
@@ -72,6 +75,9 @@ const Index = () => {
 
         {/* Features Section */}
         <Features />
+
+        {/* AI Solutions Section */}
+        <AISolutions />
 
         {/* Pricing Section */}
         <Pricing />
