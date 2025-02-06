@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Rocket, Brain, Users, DollarSign, MessageSquare } from "lucide-react";
+import { Rocket, Brain, Users, DollarSign, MessageSquare, Cpu } from "lucide-react";
 import { Button } from "./ui/button";
 import { useNavigate } from "react-router-dom";
 
@@ -27,7 +27,8 @@ export const Navbar = () => {
             animate={{ opacity: 1 }}
             className="text-2xl font-bold text-cyber-white flex items-center gap-2"
           >
-            <img src="/lovable-uploads/bca571ef-d4ac-426b-9ae5-71866b124cc3.png" alt="Logo" className="h-8" />
+            <Cpu className="w-8 h-8 text-cyber-cyan animate-pulse" />
+            <span className="text-cyber-cyan">Agentia</span>
           </motion.div>
         </div>
 
