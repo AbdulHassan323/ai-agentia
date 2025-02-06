@@ -1,8 +1,11 @@
 import { SplineSceneBasic } from "@/components/SplineSceneBasic";
+import { Features } from "@/components/Features";
+import { Pricing } from "@/components/Pricing";
+import { Contact } from "@/components/Contact";
+import { AnimatedTestimonials } from "@/components/ui/animated-testimonials";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { AnimatedTestimonials } from "@/components/ui/animated-testimonials";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -34,7 +37,7 @@ const Index = () => {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8 }}
-        className="max-w-7xl mx-auto space-y-20"
+        className="max-w-7xl mx-auto"
       >
         {/* Hero Section */}
         <header className="text-center pt-20 px-4">
@@ -52,7 +55,7 @@ const Index = () => {
             transition={{ delay: 0.4 }}
             className="text-4xl md:text-6xl font-bold mb-4 text-glow shadow-cyber-cyan"
           >
-            Step into the World of AI Agents
+            Next-Generation AI Agents
           </motion.h1>
           <motion.p
             initial={{ opacity: 0 }}
@@ -60,66 +63,40 @@ const Index = () => {
             transition={{ delay: 0.6 }}
             className="text-xl text-cyber-white/80 max-w-2xl mx-auto mb-8"
           >
-            Your AI-powered solutions, one click away
+            Powering the future of enterprise intelligence
           </motion.p>
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.8 }}
-            className="flex justify-center"
+            className="flex justify-center gap-4"
           >
             <Button
-              onClick={() => navigate('/marketplace')}
+              onClick={() => navigate("/marketplace")}
               className="bg-gradient-to-r from-cyber-purple to-cyber-cyan hover:opacity-90 text-white px-8 py-6 text-lg rounded-full transition-all duration-300 hover:scale-105 animate-glow shadow-lg neo-brutalism"
             >
-              Explore AI Marketplace
+              Launch Console
+            </Button>
+            <Button
+              variant="outline"
+              className="border-cyber-purple text-cyber-purple hover:bg-cyber-purple/10 px-8 py-6 text-lg rounded-full transition-all duration-300 neo-brutalism"
+              onClick={() => document.getElementById("features")?.scrollIntoView({ behavior: "smooth" })}
+            >
+              Explore Features
             </Button>
           </motion.div>
         </header>
 
         {/* 3D Scene */}
-        <div className="relative w-full h-[600px]">
+        <div className="relative w-full h-[600px] mt-12">
           <SplineSceneBasic />
         </div>
 
         {/* Features Section */}
-        <section className="py-20 px-4">
-          <motion.h2
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            transition={{ duration: 0.5 }}
-            className="text-3xl md:text-4xl font-bold text-center mb-12 bg-gradient-to-r from-cyber-cyan to-cyber-purple bg-clip-text text-transparent"
-          >
-            Unleash the Power of AI
-          </motion.h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {[
-              {
-                title: "Smart Automation",
-                description: "Automate complex tasks with intelligent AI agents",
-              },
-              {
-                title: "Data Analysis",
-                description: "Extract valuable insights from your data automatically",
-              },
-              {
-                title: "24/7 Assistance",
-                description: "Round-the-clock AI support for your business needs",
-              },
-            ].map((feature, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.2 }}
-                className="bg-cyber-black/40 backdrop-blur-lg p-6 rounded-xl neo-brutalism"
-              >
-                <h3 className="text-xl font-semibold mb-3 text-cyber-cyan">{feature.title}</h3>
-                <p className="text-cyber-white/70">{feature.description}</p>
-              </motion.div>
-            ))}
-          </div>
-        </section>
+        <Features />
+
+        {/* Pricing Section */}
+        <Pricing />
 
         {/* Testimonials Section */}
         <section className="py-20 px-4">
@@ -133,6 +110,9 @@ const Index = () => {
           </motion.h2>
           <AnimatedTestimonials testimonials={testimonials} autoplay />
         </section>
+
+        {/* Contact Section */}
+        <Contact />
       </motion.div>
     </div>
   );
