@@ -1,3 +1,4 @@
+
 import { SplineSceneBasic } from "@/components/SplineSceneBasic";
 import { Features } from "@/components/Features";
 import { Pricing } from "@/components/Pricing";
@@ -8,57 +9,9 @@ import { Footer } from "@/components/Footer";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { 
-  Activity,
-  Component,
-  Home as HomeIcon,
-  Mail,
-  Package,
-  ScrollText,
-  SunMoon,
-} from "lucide-react";
-import { Dock, DockIcon, DockItem, DockLabel } from "@/components/ui/dock";
 
 const Index = () => {
   const navigate = useNavigate();
-
-  const dockItems = [
-    {
-      title: "Home",
-      icon: <HomeIcon className="h-full w-full text-cyber-cyan" />,
-      href: "#",
-    },
-    {
-      title: "Products",
-      icon: <Package className="h-full w-full text-cyber-cyan" />,
-      href: "#",
-    },
-    {
-      title: "Components",
-      icon: <Component className="h-full w-full text-cyber-cyan" />,
-      href: "#",
-    },
-    {
-      title: "Activity",
-      icon: <Activity className="h-full w-full text-cyber-cyan" />,
-      href: "#",
-    },
-    {
-      title: "Change Log",
-      icon: <ScrollText className="h-full w-full text-cyber-cyan" />,
-      href: "#",
-    },
-    {
-      title: "Email",
-      icon: <Mail className="h-full w-full text-cyber-cyan" />,
-      href: "#",
-    },
-    {
-      title: "Theme",
-      icon: <SunMoon className="h-full w-full text-cyber-cyan" />,
-      href: "#",
-    },
-  ];
 
   return (
     <div className="min-h-screen bg-cyber-black text-cyber-white">
@@ -122,33 +75,31 @@ const Index = () => {
           <SplineSceneBasic />
         </div>
 
-        {/* Features Section */}
-        <Features />
+        {/* Features Section with ID for scrolling */}
+        <section id="features">
+          <Features />
+        </section>
 
-        {/* AI Solutions Section */}
-        <AISolutions />
+        {/* Technology Section */}
+        <section id="technology">
+          <AISolutions />
+        </section>
+
+        {/* Agents Section */}
+        <section id="agents">
+          <Features />
+        </section>
 
         {/* Pricing Section */}
-        <Pricing />
+        <section id="pricing">
+          <Pricing />
+        </section>
 
         {/* Contact Section */}
-        <Contact />
+        <section id="contact">
+          <Contact />
+        </section>
       </motion.div>
-
-      {/* Dock */}
-      <div className="fixed bottom-2 left-1/2 max-w-full -translate-x-1/2 z-50">
-        <Dock className="items-end pb-3 border border-cyber-purple/20 bg-cyber-black/80 backdrop-blur-lg">
-          {dockItems.map((item, idx) => (
-            <DockItem
-              key={idx}
-              className="aspect-square rounded-full bg-cyber-black/80 hover:bg-cyber-purple/20"
-            >
-              <DockLabel>{item.title}</DockLabel>
-              <DockIcon>{item.icon}</DockIcon>
-            </DockItem>
-          ))}
-        </Dock>
-      </div>
 
       <Footer />
     </div>
