@@ -1,3 +1,4 @@
+
 import { motion, useScroll, useTransform } from "framer-motion";
 import { Rocket, Brain, Users, DollarSign, MessageSquare, Cpu } from "lucide-react";
 import { Button } from "./ui/button";
@@ -12,9 +13,9 @@ export const Navbar = () => {
   const controlNavbar = () => {
     if (typeof window !== 'undefined') {
       if (window.scrollY > lastScrollY) {
-        setIsVisible(false); // Hide navbar on scroll down
+        setIsVisible(false);
       } else {
-        setIsVisible(true); // Show navbar on scroll up
+        setIsVisible(true);
       }
       setLastScrollY(window.scrollY);
     }
@@ -37,6 +38,16 @@ export const Navbar = () => {
     { icon: <MessageSquare className="w-4 h-4" />, label: "Contact", href: "#contact" },
   ];
 
+  const handleNavClick = (href: string) => {
+    const element = document.querySelector(href);
+    if (element) {
+      element.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    }
+  };
+
   return (
     <motion.nav
       initial={{ y: -100 }}
@@ -45,7 +56,7 @@ export const Navbar = () => {
       className="fixed top-0 left-0 right-0 z-50 bg-cyber-black/80 backdrop-blur-lg border-b border-cyber-purple/20"
     >
       <div className="max-w-7xl mx-auto px-3 py-2 flex items-center justify-between">
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-2">
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -56,11 +67,11 @@ export const Navbar = () => {
           </motion.div>
         </div>
 
-        <div className="hidden md:flex items-center gap-4">
+        <div className="hidden md:flex items-center gap-6">
           {navItems.map((item, index) => (
-            <motion.a
+            <motion.button
               key={item.label}
-              href={item.href}
+              onClick={() => handleNavClick(item.href)}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: index * 0.1 }}
@@ -68,7 +79,7 @@ export const Navbar = () => {
             >
               {item.icon}
               <span>{item.label}</span>
-            </motion.a>
+            </motion.button>
           ))}
         </div>
 
