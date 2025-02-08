@@ -16,5 +16,5 @@ export const secondaryNavItems = [
   { icon: <BarChart3 className="w-4 h-4" />, label: "Analytics", href: "/analytics" },
   { icon: <BookOpen className="w-4 h-4" />, label: "Documentation", href: "/docs" },
   { icon: <Mail className="w-4 h-4" />, label: "Contact", href: "/contact" },
-  { icon: <SunMoon className="w-4 h-4" />, label: "Theme", href: "#" },
+  { icon: <SunMoon className="w-4 h-4" />, label: "Theme", href: "/theme" },
 ];

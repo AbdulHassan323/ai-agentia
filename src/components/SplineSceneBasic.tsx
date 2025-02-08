@@ -1,3 +1,4 @@
+
 'use client'
 
 import { SplineScene } from "@/components/ui/splite";

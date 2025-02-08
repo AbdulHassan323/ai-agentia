@@ -36,7 +36,7 @@ export const Navbar = () => {
   }, [lastScrollY]);
 
   const handleNavClick = (href: string) => {
-    if (href.startsWith('#')) {
+    if (href.startsWith('#') && href.length > 1) {
       const element = document.querySelector(href);
       if (element) {
         element.scrollIntoView({
@@ -44,7 +44,7 @@ export const Navbar = () => {
           block: "start",
         });
       }
-    } else {
+    } else if (!href.startsWith('#')) {
       navigate(href);
     }
     setIsMobileMenuOpen(false);
