@@ -39,9 +39,13 @@ export const Navbar = () => {
     if (href.startsWith('#') && href.length > 1) {
       const element = document.querySelector(href);
       if (element) {
-        element.scrollIntoView({
-          behavior: "smooth",
-          block: "start",
+        const navHeight = 70; // Height of the navbar
+        const elementPosition = element.getBoundingClientRect().top;
+        const offsetPosition = elementPosition + window.pageYOffset - navHeight;
+
+        window.scrollTo({
+          top: offsetPosition,
+          behavior: "smooth"
         });
       }
     } else if (!href.startsWith('#')) {
@@ -57,12 +61,12 @@ export const Navbar = () => {
         animate={{ y: isVisible ? 0 : -100 }}
         transition={{ duration: 0.3 }}
         className={cn(
-          "fixed top-0 left-0 right-0 z-50 bg-cyber-black/80 backdrop-blur-lg border-b border-cyber-purple/20",
+          "fixed top-0 left-0 right-0 z-[1000] h-[70px] bg-cyber-black/95 backdrop-blur-lg border-b border-cyber-purple/20 shadow-lg shadow-cyber-purple/10",
           isMobileMenuOpen && "bg-cyber-black"
         )}
       >
-        <div className="max-w-7xl mx-auto px-4 py-3">
-          <div className="flex items-center justify-between">
+        <div className="h-full max-w-7xl mx-auto px-4">
+          <div className="flex items-center justify-between h-full">
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
