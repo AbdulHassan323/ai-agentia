@@ -20,10 +20,10 @@ const Index = () => {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8 }}
-        className="max-w-7xl mx-auto pt-20"
+        className="max-w-7xl mx-auto px-4"
       >
         {/* Hero Section */}
-        <header className="text-center pt-20 px-4">
+        <header className="flex flex-col items-center justify-center min-h-[calc(100vh-80px)] py-12">
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -52,7 +52,7 @@ const Index = () => {
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.8 }}
-            className="flex justify-center gap-4"
+            className="flex flex-col sm:flex-row justify-center gap-4"
           >
             <Button
               onClick={() => navigate("/marketplace")}
