@@ -1,3 +1,4 @@
+
 import { motion } from "framer-motion";
 import { Search, Edit, Brain, Play, BarChart, MessageSquare, Code, Lightbulb } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -6,6 +7,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { useState } from "react";
 import { AgentCard } from "@/components/AgentCard";
 import { AgentTaskDialog } from "@/components/AgentTaskDialog";
+import { Squares } from "@/components/ui/squares-background";
 
 const agents = [
   {
@@ -112,8 +114,19 @@ const Marketplace = () => {
   const uniqueTags = Array.from(new Set(agents.flatMap(agent => agent.tags)));
 
   return (
-    <div className="min-h-screen bg-cyber-black text-cyber-white p-4 md:p-8">
-      <div className="max-w-7xl mx-auto">
+    <div className="min-h-screen relative bg-[#060606] text-cyber-white p-4 md:p-8 overflow-hidden">
+      <div className="absolute inset-0 z-0">
+        <Squares 
+          direction="diagonal"
+          speed={0.5}
+          squareSize={40}
+          borderColor="rgba(176, 38, 255, 0.1)"
+          hoverFillColor="rgba(176, 38, 255, 0.05)"
+          className="opacity-50"
+        />
+      </div>
+      
+      <div className="relative z-10 max-w-7xl mx-auto">
         <motion.h1
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
