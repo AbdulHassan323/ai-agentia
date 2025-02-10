@@ -48,7 +48,7 @@ export const Navbar = () => {
           behavior: "smooth"
         });
       }
-    } else if (!href.startsWith('#')) {
+    } else {
       navigate(href);
     }
     setIsMobileMenuOpen(false);
@@ -70,7 +70,8 @@ export const Navbar = () => {
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              className="text-lg font-bold text-cyber-white flex items-center gap-1"
+              className="text-lg font-bold text-cyber-white flex items-center gap-1 cursor-pointer"
+              onClick={() => navigate("/")}
             >
               <Cpu className="w-5 h-5 text-cyber-cyan animate-pulse" />
               <span className="text-cyber-cyan">Agentia</span>
@@ -96,10 +97,7 @@ export const Navbar = () => {
               <Button
                 variant="ghost"
                 size="icon"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setIsMobileMenuOpen(!isMobileMenuOpen);
-                }}
+                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                 className="text-cyber-white hover:text-cyber-cyan"
               >
                 {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
