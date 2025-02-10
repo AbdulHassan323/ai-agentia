@@ -1,7 +1,8 @@
 
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
+import { cn } from "@/lib/utils";
 
 interface MobileMenuProps {
   items: Array<{
@@ -15,21 +16,20 @@ interface MobileMenuProps {
 
 export const MobileMenu = ({ items, isOpen, onItemClick }: MobileMenuProps) => {
   const navigate = useNavigate();
+  const location = useLocation();
 
-  const handleNavigation = (href: string) => {
+  const isActive = (href: string) => {
     if (href.startsWith('#')) {
-      // For hash links, use the onItemClick handler
-      onItemClick(href);
-    } else {
-      // For regular routes, use navigate
-      navigate(href);
+      return false;
     }
+    return location.pathname === href;
   };
 
   return (
     <motion.div
       initial={false}
       animate={{ height: isOpen ? "auto" : 0 }}
+      transition={{ duration: 0.3 }}
       className="md:hidden overflow-hidden bg-cyber-black/95 backdrop-blur-lg fixed w-full left-0 top-[70px] z-50"
     >
       <div className="py-4 space-y-2 px-4">
@@ -40,8 +40,13 @@ export const MobileMenu = ({ items, isOpen, onItemClick }: MobileMenuProps) => {
             whileTap={{ scale: 0.98 }}
           >
             <button
-              onClick={() => handleNavigation(item.href)}
-              className="flex items-center gap-2 w-full text-cyber-white/70 hover:text-cyber-cyan transition-colors py-3 px-4 rounded-lg hover:bg-cyber-purple/10"
+              onClick={() => onItemClick(item.href)}
+              className={cn(
+                "flex items-center gap-2 w-full transition-colors py-3 px-4 rounded-lg",
+                isActive(item.href)
+                  ? "text-cyber-cyan bg-cyber-purple/10"
+                  : "text-cyber-white/70 hover:text-cyber-cyan hover:bg-cyber-purple/10"
+              )}
             >
               {item.icon}
               <span className="text-left">{item.label}</span>
@@ -49,7 +54,7 @@ export const MobileMenu = ({ items, isOpen, onItemClick }: MobileMenuProps) => {
           </motion.div>
         ))}
         <Button
-          onClick={() => navigate("/marketplace")}
+          onClick={() => onItemClick("/marketplace")}
           className="w-full bg-gradient-to-r from-cyber-purple to-cyber-cyan hover:opacity-90 text-white rounded-full transition-all duration-300 hover:scale-105 animate-glow shadow-lg mt-4"
         >
           Launch Console

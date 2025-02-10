@@ -2,7 +2,7 @@
 import { motion } from "framer-motion";
 import { Cpu, Menu, X } from "lucide-react";
 import { Button } from "./ui/button";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { mainNavItems } from "./navbar/NavItems";
@@ -10,6 +10,7 @@ import { MobileMenu } from "./navbar/MobileMenu";
 
 export const Navbar = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [isVisible, setIsVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -36,7 +37,9 @@ export const Navbar = () => {
   }, [lastScrollY]);
 
   const handleNavClick = (href: string) => {
-    if (href.startsWith('#') && href.length > 1) {
+    setIsMobileMenuOpen(false); // Close mobile menu first
+
+    if (href.startsWith('#')) {
       const element = document.querySelector(href);
       if (element) {
         const navHeight = 70;
@@ -51,7 +54,13 @@ export const Navbar = () => {
     } else {
       navigate(href);
     }
-    setIsMobileMenuOpen(false);
+  };
+
+  const isActive = (href: string) => {
+    if (href.startsWith('#')) {
+      return false; // Hash links don't have active state
+    }
+    return location.pathname === href;
   };
 
   return (
@@ -67,15 +76,15 @@ export const Navbar = () => {
       >
         <div className="h-full max-w-7xl mx-auto px-4">
           <div className="flex items-center justify-between h-full">
-            <motion.div
+            <motion.button
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               className="text-lg font-bold text-cyber-white flex items-center gap-1 cursor-pointer"
-              onClick={() => navigate("/")}
+              onClick={() => handleNavClick("/")}
             >
               <Cpu className="w-5 h-5 text-cyber-cyan animate-pulse" />
               <span className="text-cyber-cyan">Agentia</span>
-            </motion.div>
+            </motion.button>
 
             <div className="hidden md:flex items-center gap-6">
               {mainNavItems.map((item, index) => (
@@ -85,7 +94,12 @@ export const Navbar = () => {
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ delay: index * 0.1 }}
-                  className="flex items-center gap-1 text-sm text-cyber-white/70 hover:text-cyber-cyan transition-colors"
+                  className={cn(
+                    "flex items-center gap-1 text-sm transition-colors",
+                    isActive(item.href)
+                      ? "text-cyber-cyan"
+                      : "text-cyber-white/70 hover:text-cyber-cyan"
+                  )}
                 >
                   {item.icon}
                   <span>{item.label}</span>
@@ -106,7 +120,7 @@ export const Navbar = () => {
 
             <div className="hidden md:block">
               <Button
-                onClick={() => navigate("/marketplace")}
+                onClick={() => handleNavClick("/marketplace")}
                 className="bg-gradient-to-r from-cyber-purple to-cyber-cyan hover:opacity-90 text-white px-4 py-1 text-sm rounded-full transition-all duration-300 hover:scale-105 animate-glow shadow-lg"
               >
                 Launch Console
